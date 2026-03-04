@@ -1,0 +1,36 @@
+# Gradle build outputs
+build/
+.gradle/
+
+# Local configuration — machine-specific, never commit
+local.properties
+
+# vscode
+.vscode/
+
+# Android Studio / IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Kotlin incremental compilation caches
+.kotlin/
+
+# Signing keystores — never commit private keys
+*.keystore
+*.jks
+
+# APK / AAB build artifacts
+*.apk
+*.aab
+
+# Android Studio profiler and logcat captures
+captures/
+
+# Heap dumps
+*.hprof
+
+# OS-generated junk
+.DS_Store
+Thumbs.db

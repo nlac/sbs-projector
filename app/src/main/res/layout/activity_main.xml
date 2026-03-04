@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#1A1A2E"
+    android:fitsSystemWindows="true">
+
+    <!--
+        Centered vertical stack, width-capped at 65% of the available area
+        (after fitsSystemWindows already accounts for the nav bar on the right).
+    -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintWidth_percent="0.65">
+
+        <!-- Title -->
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/app_name"
+            android:textColor="#E0E0FF"
+            android:textSize="28sp"
+            android:textStyle="bold"/>
+
+        <!-- Touch-forwarding / accessibility status (tap → Accessibility settings) -->
+        <TextView
+            android:id="@+id/tvAccessibilityStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Touch Forwarding: Disabled — tap to enable"
+            android:textColor="#FF9800"
+            android:textSize="13sp"
+            android:paddingHorizontal="14dp"
+            android:paddingVertical="6dp"
+            android:background="@drawable/bg_status"
+            android:layout_marginTop="10dp"/>
+
+        <!-- Sliders card -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp"
+            android:background="@drawable/bg_card"
+            android:layout_marginTop="18dp">
+
+            <!-- Shrink -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Shrink"
+                    android:textColor="#B0B0C8"
+                    android:textSize="14sp"/>
+                <TextView
+                    android:id="@+id/tvShrinkValue"
+                    android:layout_width="44dp"
+                    android:layout_height="wrap_content"
+                    android:text="0.65"
+                    android:textColor="#E0E0FF"
+                    android:textSize="14sp"
+                    android:gravity="end"/>
+            </LinearLayout>
+            <SeekBar
+                android:id="@+id/seekShrink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="65"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="12dp"/>
+
+            <!-- Closeness -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Closeness"
+                    android:textColor="#B0B0C8"
+                    android:textSize="14sp"/>
+                <TextView
+                    android:id="@+id/tvClosenessValue"
+                    android:layout_width="44dp"
+                    android:layout_height="wrap_content"
+                    android:text="0.70"
+                    android:textColor="#E0E0FF"
+                    android:textSize="14sp"
+                    android:gravity="end"/>
+            </LinearLayout>
+            <SeekBar
+                android:id="@+id/seekCloseness"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:max="100"
+                android:progress="70"
+                android:layout_marginTop="4dp"/>
+
+        </LinearLayout>
+
+        <!-- Action buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="16dp">
+
+            <Button
+                android:id="@+id/btnStartSbs"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="Start SBS"
+                android:textSize="15sp"
+                android:backgroundTint="#4CAF50"/>
+
+            <Button
+                android:id="@+id/btnHelp"
+                android:layout_width="0dp"
+                android:layout_height="52dp"
+                android:layout_weight="1"
+                android:text="Help"
+                android:textSize="15sp"
+                android:backgroundTint="#3949AB"
+                android:layout_marginStart="12dp"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
