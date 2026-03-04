@@ -25,17 +25,17 @@ import android.view.SurfaceView
  * Touch forwarding:
  * - onTouchEvent records the user's gesture path and transforms SBS overlay coordinates back to the
  * original app screen coordinates.
- * - Before injecting, SbsOverlayService adds FLAG_NOT_TOUCHABLE to the overlay
- *   window so the system skips it and delivers the injected gesture directly to
- *   the original app. The flag is removed once the gesture completes.
+ * - Before injecting, SbsOverlayService adds FLAG_NOT_TOUCHABLE to the overlay window so the system
+ * skips it and delivers the injected gesture directly to the original app. The flag is removed once
+ * the gesture completes.
  */
 class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Callback {
 
     private val surfaceHolder: SurfaceHolder = holder
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val dividerPaint = Paint().apply { color = Color.BLACK }
-    private val stopBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xCC505050.toInt() }
-    private val backBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xCC505050.toInt() }
+    private val stopBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xCC606060.toInt() }
+    private val backBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xCC606060.toInt() }
     private val btnTextPaint =
             Paint(Paint.ANTI_ALIAS_FLAG).apply {
                 color = Color.BLACK
@@ -168,12 +168,7 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
         }
     }
 
-    /**
-     * Draws BACK (blue) and STOP (red) buttons just above the projected content area. BACK is
-     * anchored to the top-left corner of [leftContent], STOP to the top-right corner. Positioned
-     * one button-height above [leftContent].top so they sit in the letterbox band above the
-     * content, clearly separated from the projected image.
-     */
+    /** Draws the two action buttons above the first half-projection */
     private fun drawOverlayButtons(canvas: Canvas, leftContent: RectF) {
         val backL = leftContent.left
         val stopL = leftContent.right - BTN_W
@@ -271,8 +266,8 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     }
 
     /**
-     * Maps a touch point in SBS overlay space to the corresponding app screen coordinate.
-     * Touches in the letterbox padding are clamped to the nearest content edge.
+     * Maps a touch point in SBS overlay space to the corresponding app screen coordinate. Touches
+     * in the letterbox padding are clamped to the nearest content edge.
      */
     private fun transformToFullScreen(tx: Float, ty: Float, g: DrawGeometry): PointF {
         val dst = if (tx < g.halfW) g.leftDst else g.rightDst

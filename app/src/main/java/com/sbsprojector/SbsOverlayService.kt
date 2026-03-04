@@ -15,6 +15,7 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.os.PowerManager
+import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Gravity
 import android.view.WindowInsets
@@ -44,8 +45,7 @@ class SbsOverlayService : Service() {
 
         // View geometry — written by MainActivity sliders, read by capture thread every frame
         @Volatile var shrink: Float = 0.65f // 0..1: 1 = fills half-screen, 0 = invisible
-        @Volatile
-        var closeness: Float = 0.70f // 0.3..1.3: >1 brings eyes inward, <1 pushes outward
+        @Volatile var closeness: Float = 0.70f // 0.3..1.3: >1 brings eyes inward, <1 pushes outward
     }
 
     private lateinit var windowManager: WindowManager
@@ -81,11 +81,15 @@ class SbsOverlayService : Service() {
         // startForeground() MUST be called before any bail/return, or Android throws
         // ForegroundServiceDidNotStartInTimeException 5 seconds after startForegroundService().
         try {
-            startForeground(
-                    NOTIFICATION_ID,
-                    buildNotification(),
-                    ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
-            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                startForeground(
+                        NOTIFICATION_ID,
+                        buildNotification(),
+                        ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION
+                )
+            } else {
+                startForeground(NOTIFICATION_ID, buildNotification())
+            }
         } catch (e: Exception) {
             Log.e(TAG, "startForeground FAILED", e)
             toast("SBS crash @ startForeground: ${e.javaClass.simpleName}: ${e.message}")
@@ -117,20 +121,36 @@ class SbsOverlayService : Service() {
     // -------------------------------------------------------------------------
 
     private fun setupOverlayWindow(resultCode: Int, projectionData: Intent) {
-        val wm = windowManager.currentWindowMetrics
-        val screenW = wm.bounds.width()
-        val screenH = wm.bounds.height()
+        val screenW: Int
+        val screenH: Int
+        var insetLeft = 0
+        var insetRight = 0
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            val wm = windowManager.currentWindowMetrics
+            screenW = wm.bounds.width()
+            screenH = wm.bounds.height()
+            val insets =
+                    wm.windowInsets.getInsetsIgnoringVisibility(
+                            WindowInsets.Type.navigationBars() or WindowInsets.Type.displayCutout()
+                    )
+            insetLeft = insets.left
+            insetRight = insets.right
+        } else {
+            @Suppress("DEPRECATION") val display = windowManager.defaultDisplay
+            val metrics = DisplayMetrics()
+            @Suppress("DEPRECATION") display.getRealMetrics(metrics)
+            screenW = metrics.widthPixels
+            screenH = metrics.heightPixels
+            // No reliable inset API below API 30 — leave insets at 0
+        }
 
         sbsView = SbsSurfaceView(this)
 
         // Tell the view how many pixels to crop from each side of the captured bitmap so
         // the camera-cutout (left) and nav-bar (right) dead zones are excluded before drawing.
-        val insets =
-                wm.windowInsets.getInsetsIgnoringVisibility(
-                        WindowInsets.Type.navigationBars() or WindowInsets.Type.displayCutout()
-                )
-        sbsView.displayInsetLeft = insets.left
-        sbsView.displayInsetRight = insets.right
+        sbsView.displayInsetLeft = insetLeft
+        sbsView.displayInsetRight = insetRight
 
         // Base flags used for normal (touchable) operation.
         // FLAG_SECURE excludes the overlay window from VirtualDisplay capture at the compositor
@@ -154,12 +174,22 @@ class SbsOverlayService : Service() {
                         )
                         .apply {
                             gravity = Gravity.TOP or Gravity.START
-                            // Cover the camera cutout so the overlay spans the full display width and the SBS centre divider lands exactly at the physical screen midpoint.
-                            layoutInDisplayCutoutMode =
-                                    WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                            // Cover the camera cutout so the overlay spans the full display width
+                            // and the SBS centre divider lands exactly at the physical screen
+                            // midpoint.
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                                layoutInDisplayCutoutMode =
+                                        WindowManager.LayoutParams
+                                                .LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
+                            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                                layoutInDisplayCutoutMode =
+                                        WindowManager.LayoutParams
+                                                .LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES
+                            }
                         }
 
-        // Give SbsSurfaceView a way to temporarily disable touch interception so that injected accessibility gestures reach the projected app (which sits below our overlay). Called on the main thread before gesture injection; restored in the gesture callback.
+        // disable/enable touch interception on SbsSurfaceView so that injected
+        // accessibility gestures can reach the projected app which sits below our overlay
         sbsView.setWindowTouchable = { touchable ->
             val flags =
                     if (touchable) baseFlags
@@ -168,10 +198,11 @@ class SbsOverlayService : Service() {
         }
         sbsView.onStopRequested = { stopSelf() }
 
-        val accSvc = SbsAccessibilityService.instance
-                ?: throw IllegalStateException(
-                        "Accessibility service not connected — enable SBS Projector in Settings → Accessibility"
-                )
+        val accSvc =
+                SbsAccessibilityService.instance
+                        ?: throw IllegalStateException(
+                                "Accessibility service not connected — enable SBS Projector in Settings → Accessibility"
+                        )
         accSvc.addOverlayWindow(sbsView, params)
 
         captureManager =

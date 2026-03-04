@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId "com.sbsprojector"
-        minSdk 31          // Android 12+ for better MediaProjection support
+        minSdk 26          // Android 8.0+
         targetSdk 36       // Android 16
         versionCode 1
         versionName "1.0"

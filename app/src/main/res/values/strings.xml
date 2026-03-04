@@ -2,12 +2,16 @@
 <resources>
     <string name="app_name">SBS Projector</string>
     <string name="accessibility_service_description">Forwards touch events from the SBS stereo overlay to the projected app at the correct screen coordinates.</string>
-
     <string name="instructions">
-1. Tap "Start SBS"\n
-2. Grant screen capture permission when prompted\n
-3. Switch to the app you want to project\n
-4. Put your phone in the VR headset\n\n
-To stop: tap the red STOP button at the top of the overlay,\nor pull down the notification and tap "Stop SBS".
+1. Tap [Touch forwarding disabled - tap to enable]\n
+   - grant accessibility permission for SBS Projector\n
+2. Tap [Start SBS]\n
+   - allow to send notifications when prompted\n
+   - grant *display over other apps* permission when prompted\n
+3. On the *Share your screen with SBS projector?* dialog choose *Share one app* and proceed\n
+4. Select the app you want to project\n
+5. Put your phone in the VR headset\n\n
+
+To stop the projection: tap the STOP button at the top of the overlay,\nor pull down the notification and tap [Stop SBS].
     </string>
 </resources>

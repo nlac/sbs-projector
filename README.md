@@ -27,7 +27,7 @@ SBS Projector works as a transparent overlay. It captures the screen in real tim
 
 **Requirements:**
 
-- Android 12 (API 31) or newer
+- Android 8.0 (API 26) or newer
 - A phone-based VR headset (Google Cardboard or compatible)
 
 ---
@@ -39,7 +39,7 @@ SBS Projector works as a transparent overlay. It captures the screen in real tim
 - Android Studio Ladybug or newer (supports AGP 8.7+)
 - Android SDK with API level 36 installed
 - JDK 17
-- A physical Android device running Android 12 or newer (the emulator does not support MediaProjection)
+- A physical Android device running Android 8.0 or newer (the emulator does not support MediaProjection)
 
 ### Build steps
 
@@ -221,7 +221,7 @@ Touch coordinate translation:
 | Property | Value |
 |---|---|
 | compileSdk / targetSdk | 36 (Android 16) |
-| minSdk | 31 (Android 12) |
+| minSdk | 26 (Android 8.0) |
 | AGP version | 8.7.3 |
 | Kotlin version | 2.2.20 |
 | Java compatibility | 17 |
@@ -234,4 +234,10 @@ Key dependencies: `androidx.core:core-ktx`, `appcompat`, `material`, `constraint
 
 **Supporting different headset IPDs:** The closeness slider approximates IPD adjustment. A more accurate implementation would parameterize the eye separation in actual millimeters given the device's physical screen dimensions.
 
-**Android 12 restriction note:** `minSdk` is set to 31 because `FOREGROUND_SERVICE_MEDIA_PROJECTION` was introduced in Android 14 (API 34) as a required manifest attribute, and the MediaProjection behavior changed significantly in Android 12. Testing on Android 12 and 13 may require minor adjustments to the foreground service type declaration.
+**Android version compatibility:** `minSdk` is set to 26 (Android 8.0). The app uses runtime API version checks to handle differences across versions:
+- On Android 8.x–9 (API 26–28): foreground service runs without a typed service declaration; display cutout mode is not applied.
+- On Android 9 (API 28–29): display cutout uses `LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES` as a fallback.
+- On Android 10+ (API 29+): foreground service is started with `FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION`.
+- On Android 11+ (API 30+): window metrics and insets are read via `WindowManager.currentWindowMetrics`; display cutout uses `LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS`.
+- On Android 12+ (API 31+): `FOREGROUND_SERVICE_MEDIA_PROJECTION` manifest permission is required and declared.
+- On Android 13+ (API 33+): `POST_NOTIFICATIONS` runtime permission is requested.
