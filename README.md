@@ -94,39 +94,34 @@ Additionally, you must enable the **SBS Projector Accessibility Service** in sys
 
 ## User Guide
 
-### Initial setup
-
 ![Main screen](screenshots/main.jpg)
+
+### Initial setup
 
 When you open the app for the first time:
 
-1. Tap the accessibility status row at the top. This opens the Android Accessibility Settings. Find "SBS Projector" in the list and enable it. Return to the app.
-2. Grant overlay and notification permissions if prompted.
+- You will probably see the status button at the top warning you "Touch forwarding disabled - tap to enable". Tap it, it will open the Android Accessibility Settings. Find "SBS Projector" in the list and enable it. Return to the app.
 
 You only need to do this once. The accessibility service stays enabled until you manually disable it.
 
-### Adjusting stereo settings
-
-Two sliders control how the stereoscopic image is rendered:
-
-- **Shrink** - Scales the projected images. Increase this if the image feels too wide inside the headset, or if you see barrel distortion from the lenses.
-- **Closeness** - Controls the distance of the two half-projections. Adjust it to see the content clearly according to your eye distance, VR and phone screen dimensions.
-
-These settings are saved automatically and restored the next time you open the app.
-
 ### Starting SBS projection
 
-1. Tap **Start SBS**.
-2. The system will show a consent dialog asking whether to share the whole screen or a single app.
+1. First, it's recommended to start the app you want to project (eg. Fimi Mini Navi) before starting the projection
+2. Start SBS Projector, tap **Start SBS**.
+   - allow to "send notifications" when prompted (need to do only once)
+   - grant "display over other apps" permission when prompted (need to do only once)
+3. The system will show a consent dialog asking whether to share the whole screen or a single app.
 
    ![Screen capture consent dialog](screenshots/share-app-consent.jpg)
 
-   Leave the select box as it is (**Share one app**), then choose the app you want to project from the picker that follows.
+   Leave the select box as it is (**Share one app**), do NOT choose "Entire screen".
+   
+   Tap Next and select the app you want to project from the picker that follows.
 
    ![App picker](screenshots/share-app.jpg)
 
-3. The main screen closes and the SBS overlay activates over the chosen app.
-4. Put your phone in the VR headset. Connect a wireless or wired mouse if you need to operate on the app while using the VR headset.
+4. The main screen closes and the SBS overlay activates over the chosen app.
+5. Put your phone in the VR headset. Connect a wireless or wired mouse if you need to operate on the app while using the VR headset.
 
 ![SBS overlay showing VLC playing a movie, duplicated for left and right eyes, with BACK and STOP SBS buttons](screenshots/overlay.jpg)
 
@@ -141,6 +136,15 @@ While the SBS overlay is active:
 ### Stopping projection
 
 Tap the **STOP SBS** button in the overlay. The foreground service will stop, the overlay will be removed, and the screen capture session will end.
+
+### Configuring
+
+Two sliders control how the stereoscopic image is rendered:
+
+- **Shrink** - Scales the projected images. Increase this if the image feels too wide inside the headset, or if you see barrel distortion from the lenses.
+- **Closeness** - Controls the distance of the two half-projections. Adjust it to see the content clearly according to your eye distance, VR and phone screen dimensions.
+
+These settings are saved automatically and restored the next time you open the app.
 
 ---
 

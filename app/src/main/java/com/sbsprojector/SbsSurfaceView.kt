@@ -113,6 +113,8 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
         try {
             val cW = canvas.width
             val cH = canvas.height
+            // just to make sure
+            if (cW <= 0 || cH <= 0) return
             val halfW = cW / 2
 
             // Crop to active content area, skipping camera-cutout (left) and
@@ -175,7 +177,8 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
         }
 
         // Button hit-tests — consume the entire touch sequence so it is never forwarded.
-        if (backButton.hitTest(event) { SbsAccessibilityService.instance?.performBack() }) return true
+        if (backButton.hitTest(event) { SbsAccessibilityService.instance?.performBack() })
+                return true
         if (stopButton.hitTest(event) { onStopRequested?.invoke() }) return true
 
         val geom = lastGeometry ?: return false
@@ -264,11 +267,12 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     // SurfaceHolder.Callback
     // -------------------------------------------------------------------------
 
-    override fun surfaceCreated(holder: SurfaceHolder) {
-        surfaceReady = true
-    }
+    //override fun surfaceCreated(holder: SurfaceHolder) {
+        // we need dimensions, so not setting the flag yet
+        // surfaceReady = true
+    //}
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
-        surfaceReady = true
+        surfaceReady = width > 0 && height > 0
     }
     override fun surfaceDestroyed(holder: SurfaceHolder) {
         surfaceReady = false
