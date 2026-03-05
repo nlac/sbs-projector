@@ -6,6 +6,8 @@ plugins {
 android {
     namespace 'com.sbsprojector'
     compileSdk 36
+    def props = new Properties()
+    file("../local.properties").withInputStream { props.load(it) }
 
     defaultConfig {
         applicationId "com.sbsprojector"
@@ -14,20 +16,33 @@ android {
         versionCode 1
         versionName "1.0"
     }
+    
+    signingConfigs {
+        release {
+            storeFile file("../sbs-projector.jks")
+            storePassword props["keystore.password"]
+            keyAlias "sbs-projector"
+            keyPassword props["key.password"]
+        }
+    }
 
     buildTypes {
         release {
-            minifyEnabled false
+            signingConfig signingConfigs.release
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
     kotlinOptions {
         jvmTarget = '17'
     }
+
     buildFeatures {
         viewBinding true
     }
