@@ -267,10 +267,10 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     // SurfaceHolder.Callback
     // -------------------------------------------------------------------------
 
-    //override fun surfaceCreated(holder: SurfaceHolder) {
+    override fun surfaceCreated(holder: SurfaceHolder) {
         // we need dimensions, so not setting the flag yet
         // surfaceReady = true
-    //}
+    }
     override fun surfaceChanged(holder: SurfaceHolder, format: Int, width: Int, height: Int) {
         surfaceReady = width > 0 && height > 0
     }
