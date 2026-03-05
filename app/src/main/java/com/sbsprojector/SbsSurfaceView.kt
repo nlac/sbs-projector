@@ -34,15 +34,8 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     private val surfaceHolder: SurfaceHolder = holder
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
     private val dividerPaint = Paint().apply { color = Color.BLACK }
-    private val stopBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xCC606060.toInt() }
-    private val backBgPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply { color = 0xCC606060.toInt() }
-    private val btnTextPaint =
-            Paint(Paint.ANTI_ALIAS_FLAG).apply {
-                color = Color.BLACK
-                textAlign = Paint.Align.CENTER
-                textSize = 36f
-                isFakeBoldText = true
-            }
+    private val backButton = OverlayButton("BACK", 0xCC606060.toInt(), RectF())
+    private val stopButton = OverlayButton("STOP SBS", 0xCC004090.toInt(), RectF())
 
     // Pre-allocated rects — reused every frame to avoid GC pressure
     private val srcRect = Rect()
@@ -50,7 +43,7 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     private val rightDst = RectF()
 
     companion object {
-        private const val BTN_W = 160f
+        private const val BTN_W = 190f
         private const val BTN_H = 68f
     }
 
@@ -93,9 +86,6 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     private var gestureDownTime = 0L
     // True while a gesture is being injected — swallows incoming touches to prevent re-entry.
     private var injecting = false
-    // True when the ongoing touch started inside the back/stop button area.
-    private var tappingBackBtn = false
-    private var tappingStopBtn = false
 
     init {
         surfaceHolder.addCallback(this)
@@ -170,14 +160,12 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
 
     /** Draws the two action buttons above the first half-projection */
     private fun drawOverlayButtons(canvas: Canvas, leftContent: RectF) {
-        val backL = leftContent.left
-        val stopL = leftContent.right - BTN_W
+        val btnTop = leftContent.top - BTN_H
         val btnBot = leftContent.top
-        val btnTop = btnBot - BTN_H
-        canvas.drawRoundRect(backL, btnTop, backL + BTN_W, btnBot, 10f, 10f, backBgPaint)
-        canvas.drawText("BACK", backL + BTN_W / 2f, btnTop + BTN_H * 0.68f, btnTextPaint)
-        canvas.drawRoundRect(stopL, btnTop, stopL + BTN_W, btnBot, 10f, 10f, stopBgPaint)
-        canvas.drawText("STOP", stopL + BTN_W / 2f, btnTop + BTN_H * 0.68f, btnTextPaint)
+        backButton.updateRect(leftContent.left, btnTop, leftContent.left + BTN_W, btnBot)
+        stopButton.updateRect(leftContent.right - BTN_W, btnTop, leftContent.right, btnBot)
+        backButton.draw(canvas)
+        stopButton.draw(canvas)
     }
 
     override fun onTouchEvent(event: MotionEvent): Boolean {
@@ -187,41 +175,8 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
         }
 
         // Button hit-tests — consume the entire touch sequence so it is never forwarded.
-        // Positions mirror the drawing code: anchored to leftDst corners from lastGeometry.
-        val geomForBtns = lastGeometry
-        val backL = geomForBtns?.leftDst?.left ?: -1f
-        val stopL = if (geomForBtns != null) geomForBtns.leftDst.right - BTN_W else -1f
-        val btnBot = geomForBtns?.leftDst?.top ?: -1f
-        val btnTop = btnBot - BTN_H
-        val inBackBtn = event.x in backL..(backL + BTN_W) && event.y in btnTop..btnBot
-        val inStopBtn = event.x in stopL..(stopL + BTN_W) && event.y in btnTop..btnBot
-        when (event.actionMasked) {
-            MotionEvent.ACTION_DOWN -> {
-                if (inBackBtn) {
-                    tappingBackBtn = true
-                    return true
-                }
-                if (inStopBtn) {
-                    tappingStopBtn = true
-                    return true
-                }
-            }
-            MotionEvent.ACTION_MOVE -> if (tappingBackBtn || tappingStopBtn) return true
-            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                if (tappingBackBtn) {
-                    tappingBackBtn = false
-                    if (event.actionMasked == MotionEvent.ACTION_UP && inBackBtn)
-                            SbsAccessibilityService.instance?.performBack()
-                    return true
-                }
-                if (tappingStopBtn) {
-                    tappingStopBtn = false
-                    if (event.actionMasked == MotionEvent.ACTION_UP && inStopBtn)
-                            onStopRequested?.invoke()
-                    return true
-                }
-            }
-        }
+        if (backButton.hitTest(event) { SbsAccessibilityService.instance?.performBack() }) return true
+        if (stopButton.hitTest(event) { onStopRequested?.invoke() }) return true
 
         val geom = lastGeometry ?: return false
         val pt = transformToFullScreen(event.x, event.y, geom)

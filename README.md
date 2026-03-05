@@ -22,7 +22,7 @@ SBS Projector works as a transparent overlay. It captures the screen in real tim
 - Works with any Android app: games, video players, drone controllers, browsers
 - Adjustable stereo geometry: scale (shrink) and distance (closeness)
 - Touch-through: the SBS overlay is interactive. It means taps and swipes are transparently forwarded to the underlying app
-- In-overlay controls: BACK and STOP buttons accessible while wearing a headset, using a wireless or wired mouse
+- In-overlay controls: BACK and STOP SBS buttons accessible while wearing a headset, using a wireless or wired mouse
 - Foreground service with wake lock keeps the screen on during extended use
 
 **Requirements:**
@@ -128,7 +128,7 @@ These settings are saved automatically and restored the next time you open the a
 3. The main screen closes and the SBS overlay activates over the chosen app.
 4. Put your phone in the VR headset. Connect a wireless or wired mouse if you need to operate on the app while using the VR headset.
 
-![SBS overlay showing VLC playing a movie, duplicated for left and right eyes, with BACK and STOP buttons](screenshots/overlay.jpg)
+![SBS overlay showing VLC playing a movie, duplicated for left and right eyes, with BACK and STOP SBS buttons](screenshots/overlay.jpg)
 
 ### Using the overlay
 
@@ -136,13 +136,11 @@ While the SBS overlay is active:
 
 - Taps and swipes are forwarded transparently to the app running behind the overlay, so you can interact with the projected app normally.
 - The **BACK** button at the top of the overlay triggers the Android back action.
-- The **STOP** button at the top of the overlay ends the projection and returns you to normal single-screen view.
-
-Alternatively, pull down the notification shade and tap **Stop SBS** to end the session.
+- The **STOP SBS** button at the top of the overlay ends the projection and returns you to normal single-screen view.
 
 ### Stopping projection
 
-Either tap the **STOP** button in the overlay, or open the notification and tap **Stop SBS**. The foreground service will stop, the overlay will be removed, and the screen capture session will end.
+Tap the **STOP SBS** button in the overlay. The foreground service will stop, the overlay will be removed, and the screen capture session will end.
 
 ---
 
@@ -194,7 +192,7 @@ Transparently forwarding input from a full-screen overlay to the app underneath 
 
 - **Trusted overlay requirement (Android 12+):** Gesture injection via `AccessibilityService.dispatchGesture` only works reliably when the overlay window uses `TYPE_ACCESSIBILITY_OVERLAY`, which is only available to accessibility services. A standard `TYPE_APPLICATION_OVERLAY` window results in injected events being flagged as obscured and ignored by some apps.
 
-- **Self-touch conflict:** If the overlay window is touchable, touch events hit the overlay instead of being delivered to the app. The overlay cannot simply be made permanently non-touchable because the BACK and STOP buttons must remain interactive.
+- **Self-touch conflict:** If the overlay window is touchable, touch events hit the overlay instead of being delivered to the app. The overlay cannot simply be made permanently non-touchable because the BACK and STOP SBS buttons must remain interactive.
 
 The solution:
 
