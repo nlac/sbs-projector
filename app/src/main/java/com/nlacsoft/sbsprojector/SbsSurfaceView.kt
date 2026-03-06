@@ -45,6 +45,37 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
     companion object {
         private const val BTN_W = 190f
         private const val BTN_H = 68f
+
+        /**
+         * Pure-math core of computeDestRect, extracted for unit testing (no Android types).
+         * Returns [left, top, right, bottom] of the destination rectangle after letterboxing,
+         * shrink, and closeness are applied.
+         */
+        internal fun computeDestRectCoords(
+                srcWidth: Int, srcHeight: Int,
+                dstLeft: Int, dstRight: Int, dstHeight: Int,
+                shrink: Float, closeness: Float, closenessSign: Float
+        ): FloatArray {
+            val availW = (dstRight - dstLeft).toFloat()
+            val availH = dstHeight.toFloat()
+            val scale = minOf(availW / srcWidth, availH / srcHeight)
+            val drawW = srcWidth * scale
+            val drawH = srcHeight * scale
+            var left = dstLeft + (availW - drawW) / 2f
+            var top = (availH - drawH) / 2f
+            var right = left + drawW
+            var bottom = top + drawH
+
+            val dInset = (right - left) * (1f - shrink) / 2f
+            val vInset = (bottom - top) * (1f - shrink) / 2f
+            left += dInset; top += vInset; right -= dInset; bottom -= vInset
+
+            val quarterW = availW / 2f
+            val dx = closenessSign * quarterW * (1f - closeness)
+            left += dx; right += dx
+
+            return floatArrayOf(left, top, right, bottom)
+        }
     }
 
     @Volatile private var surfaceReady = false
@@ -124,24 +155,12 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
             val srcW = srcR - srcL
             srcRect.set(srcL, 0, srcR, bitmap.height)
 
-            // Fit cropped source into each half while preserving aspect ratio (letterbox)
-            computeDestRect(srcW, bitmap.height, 0, halfW, cH, leftDst)
-            computeDestRect(srcW, bitmap.height, halfW, cW, cH, rightDst)
-
-            // Apply shrink: scale content uniformly around each rect's centre
+            // Fit cropped source into each half while preserving aspect ratio (letterbox),
+            // then apply shrink and closeness transformations.
             val shrink = SbsOverlayService.shrink
-            val dInset = leftDst.width() * (1f - shrink) / 2f
-            val vInset = leftDst.height() * (1f - shrink) / 2f
-            leftDst.inset(dInset, vInset)
-            rightDst.inset(dInset, vInset)
-
-            // Apply closeness: shift centres relative to the default quarter positions.
-            // quarterW * (1 - closeness) is zero when closeness=1, positive when <1 (spread out),
-            // negative when >1 (pull inward).
             val closeness = SbsOverlayService.closeness
-            val quarterW = halfW / 2f
-            leftDst.offset(quarterW * (1f - closeness), 0f)
-            rightDst.offset(quarterW * (closeness - 1f), 0f)
+            computeDestRect(srcW, bitmap.height, 0, halfW, cH, shrink, closeness, +1f, leftDst)
+            computeDestRect(srcW, bitmap.height, halfW, cW, cH, shrink, closeness, -1f, rightDst)
 
             // Snapshot geometry so onTouchEvent (main thread) can transform coordinates
             lastGeometry =
@@ -243,24 +262,25 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
 
     /**
      * Compute a destination RectF that fits [srcW × srcH] inside the horizontal band [xStart, xEnd]
-     * × [0, canvasH], centred, preserving aspect ratio.
+     * × [0, canvasH], centred, preserving aspect ratio, then applies shrink and closeness.
+     *
+     * @param shrink     uniform scale factor applied around the rect centre (1 = no change).
+     * @param closeness  eye-separation factor: 1 = default, >1 pulls eyes inward, <1 spreads them.
+     * @param closenessSign  +1 for the left half, -1 for the right half.
      */
     private fun computeDestRect(
-            srcW: Int,
-            srcH: Int,
-            xStart: Int,
-            xEnd: Int,
-            canvasH: Int,
+            srcWidth: Int,
+            srcHeight: Int,
+            dstLeft: Int,
+            dstRight: Int,
+            dshHeight: Int,
+            shrink: Float,
+            closeness: Float,
+            closenessSign: Float,
             dst: RectF
     ) {
-        val availW = (xEnd - xStart).toFloat()
-        val availH = canvasH.toFloat()
-        val scale = minOf(availW / srcW, availH / srcH)
-        val drawW = srcW * scale
-        val drawH = srcH * scale
-        val left = xStart + (availW - drawW) / 2f
-        val top = (availH - drawH) / 2f
-        dst.set(left, top, left + drawW, top + drawH)
+        val c = computeDestRectCoords(srcWidth, srcHeight, dstLeft, dstRight, dshHeight, shrink, closeness, closenessSign)
+        dst.set(c[0], c[1], c[2], c[3])
     }
 
     // -------------------------------------------------------------------------
