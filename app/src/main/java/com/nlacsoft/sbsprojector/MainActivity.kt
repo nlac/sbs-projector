@@ -112,7 +112,20 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun onStartClicked() {
-        // Step 1: notification permission on Android 13+
+        // Step 1: accessibility service — mandatory for the overlay window type
+        if (!isAccessibilityServiceEnabled()) {
+            AlertDialog.Builder(this)
+                .setTitle("Accessibility permission required")
+                .setMessage("SBS Projector needs the Accessibility permission to display the stereoscopic overlay. Please enable \"SBS Projector\" in Settings → Accessibility.")
+                .setPositiveButton("Open Settings") { _, _ ->
+                    startActivity(Intent(Settings.ACTION_ACCESSIBILITY_SETTINGS))
+                }
+                .setNegativeButton("Cancel", null)
+                .show()
+            return
+        }
+
+        // Step 2: notification permission on Android 13+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             if (ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS)
                 != PackageManager.PERMISSION_GRANTED
@@ -154,9 +167,9 @@ class MainActivity : AppCompatActivity() {
 
         val a11yEnabled = isAccessibilityServiceEnabled()
         binding.tvAccessibilityStatus.text = if (a11yEnabled)
-            "Touch Forwarding: Enabled"
+            "Accessibility: Enabled"
         else
-            "Touch Forwarding: Disabled — tap to enable"
+            "Accessibility permission required — tap to enable"
         binding.tvAccessibilityStatus.setTextColor(
             if (a11yEnabled) Color.parseColor("#4CAF50") else Color.parseColor("#FF9800")
         )

@@ -88,7 +88,7 @@ On first launch the app will guide you through granting three permissions:
 2. **Display over other apps** - Required to draw the SBS overlay on top of other apps.
 3. **Screen capture** - Shown as a system consent dialog each time SBS is started - select "Share one app".
 
-Additionally, you must enable the **SBS Projector Accessibility Service** in system Settings. The main screen shows the current status and links directly to the Settings page.
+Additionally, you must enable the **SBS Projector Accessibility Service** in system Settings. This is required for the overlay to function at all — without it the app cannot create the overlay window. The main screen shows the current status and links directly to the Settings page. If it is not enabled, tapping **Start SBS** will show a dialog with an "Open Settings" button instead of proceeding.
 
 ---
 
@@ -98,19 +98,20 @@ Additionally, you must enable the **SBS Projector Accessibility Service** in sys
 
 ### Initial setup
 
-When you open the app for the first time:
+When you open the app for the first time you will see the status label at the top showing **"Accessibility permission required — tap to enable"**. The accessibility service is required for the overlay to work.
 
-- You will probably see the status button at the top warning you "Touch forwarding disabled - tap to enable". Tap it, it will open the Android Accessibility Settings. Find "SBS Projector" in the list and enable it. Return to the app.
+Tap the label (or tap **Start SBS** and choose "Open Settings" from the dialog). Find **SBS Projector** in the Accessibility list and enable it, then return to the app. The label turns green once it is active.
 
 You only need to do this once. The accessibility service stays enabled until you manually disable it.
 
 ### Starting SBS projection
 
 1. First, it's recommended to start the app you want to project (eg. Fimi Mini Navi) before starting the projection
-2. Start SBS Projector, tap **Start SBS**.
+2. Make sure the status label shows **"Accessibility: Enabled"** (green). If not, tap it and enable the service first.
+3. Start SBS Projector, tap **Start SBS**.
    - allow to "send notifications" when prompted (need to do only once)
    - grant "display over other apps" permission when prompted (need to do only once)
-3. The system will show a consent dialog asking whether to share the whole screen or a single app.
+4. The system will show a consent dialog asking whether to share the whole screen or a single app.
 
    ![Screen capture consent dialog](screenshots/share-app-consent.jpg)
 
@@ -120,8 +121,8 @@ You only need to do this once. The accessibility service stays enabled until you
 
    ![App picker](screenshots/share-app.jpg)
 
-4. The main screen closes and the SBS overlay activates over the chosen app.
-5. Put your phone in the VR headset. Connect a wireless or wired mouse if you need to operate on the app while using the VR headset.
+5. The main screen closes and the SBS overlay activates over the chosen app.
+6. Put your phone in the VR headset. Connect a wireless or wired mouse if you need to operate on the app while using the VR headset.
 
 ![SBS overlay showing VLC playing a movie, duplicated for left and right eyes, with BACK and STOP SBS buttons](screenshots/overlay.jpg)
 

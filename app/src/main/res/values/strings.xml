@@ -4,8 +4,10 @@
     <string name="accessibility_service_description">Forwards touch events from the SBS stereo overlay to the projected app at the correct screen coordinates.</string>
     <string name="instructions">
 1. Start the app you want to project to the SBS overlay\n\n
-2. Start SBS Projector, tap [Touch forwarding disabled - tap to enable]\n
-   - grant accessibility permission for SBS Projector\n\n
+2. Start SBS Projector.\n
+   If you see [Accessibility permission required — tap to enable], tap it:\n
+   - find SBS Projector in the Accessibility list and enable it, then return here.\n
+   This is required for the overlay to work and only needs to be done once.\n\n
 3. Tap [Start SBS]\n
    - allow to send notifications when prompted\n
    - grant *display over other apps* permission when prompted\n\n

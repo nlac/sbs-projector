@@ -198,11 +198,12 @@ class SbsOverlayService : Service() {
         }
         sbsView.onStopRequested = { stopSelf() }
 
-        val accSvc =
-                SbsAccessibilityService.instance
-                        ?: throw IllegalStateException(
-                                "Accessibility service not connected — enable SBS Projector in Settings → Accessibility"
-                        )
+        val accSvc = SbsAccessibilityService.instance
+        if (accSvc == null) {
+            toast("Enable \"SBS Projector\" in Settings → Accessibility, then try again.")
+            stopSelf()
+            return
+        }
         accSvc.addOverlayWindow(sbsView, params)
 
         captureManager =
