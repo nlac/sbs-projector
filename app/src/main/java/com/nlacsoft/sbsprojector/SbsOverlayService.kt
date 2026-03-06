@@ -7,6 +7,7 @@ import android.app.PendingIntent
 import android.app.Service
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.content.pm.ServiceInfo
 import android.graphics.PixelFormat
 import android.graphics.drawable.Icon
@@ -145,6 +146,14 @@ class SbsOverlayService : Service() {
             // No reliable inset API below API 30 — leave insets at 0
         }
 
+        // Always capture at landscape dimensions regardless of the device orientation at
+        // service-start time.  If the projected app (e.g. a portrait-only app) switched the
+        // device to portrait before this service started, currentWindowMetrics would return
+        // portrait bounds and the VirtualDisplay would produce portrait bitmaps that look tiny
+        // on the forced-landscape overlay canvas.  Swapping ensures capture is always landscape.
+        val captureW = maxOf(screenW, screenH)
+        val captureH = minOf(screenW, screenH)
+
         sbsView = SbsSurfaceView(this)
 
         // Tell the view how many pixels to crop from each side of the captured bitmap so
@@ -174,6 +183,9 @@ class SbsOverlayService : Service() {
                         )
                         .apply {
                             gravity = Gravity.TOP or Gravity.START
+                            // Keep the overlay in landscape at all times so the SBS canvas is
+                            // always wide, even when the projected app forces portrait mode.
+                            screenOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
                             // Cover the camera cutout so the overlay spans the full display width
                             // and the SBS centre divider lands exactly at the physical screen
                             // midpoint.
@@ -211,8 +223,8 @@ class SbsOverlayService : Service() {
                         context = this,
                         resultCode = resultCode,
                         projectionData = projectionData,
-                        screenWidth = screenW,
-                        screenHeight = screenH,
+                        screenWidth = captureW,
+                        screenHeight = captureH,
                         onFrameAvailable = { bitmap -> sbsView.drawSbsFrame(bitmap) }
                 )
         captureManager!!.start()
