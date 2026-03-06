@@ -1,4 +1,4 @@
-package com.sbsprojector
+package com.nlacsoft.sbsprojector
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -34,7 +34,7 @@ class SbsOverlayService : Service() {
     companion object {
         const val EXTRA_RESULT_CODE = "result_code"
         const val EXTRA_PROJECTION_DATA = "projection_data"
-        const val ACTION_STOP = "com.sbsprojector.ACTION_STOP"
+        const val ACTION_STOP = "com.nlacsoft.sbsprojector.ACTION_STOP"
 
         private const val TAG = "SbsOverlay"
         private const val CHANNEL_ID = "sbs_overlay_channel"

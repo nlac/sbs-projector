@@ -1,4 +1,4 @@
-package com.sbsprojector
+package com.nlacsoft.sbsprojector
 
 import android.accessibilityservice.AccessibilityService
 import android.accessibilityservice.GestureDescription

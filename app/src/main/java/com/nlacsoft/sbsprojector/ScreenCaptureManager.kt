@@ -1,4 +1,4 @@
-package com.sbsprojector
+package com.nlacsoft.sbsprojector
 
 import android.content.Context
 import android.content.Intent

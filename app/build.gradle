@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace 'com.sbsprojector'
+    namespace 'com.nlacsoft.sbsprojector'
     compileSdk 36
     def props = new Properties()
     file("../local.properties").withInputStream { props.load(it) }
 
     defaultConfig {
-        applicationId "com.sbsprojector"
+        applicationId "com.nlacsoft.sbsprojector"
         minSdk 26          // Android 8.0+
         targetSdk 36       // Android 16
         versionCode 1

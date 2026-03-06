@@ -156,7 +156,7 @@ This section describes the internal architecture for developers who want to unde
 
 ```
 app/src/main/
-  java/com/sbsprojector/
+  java/com/nlacsoft/sbsprojector/
     MainActivity.kt             - Permission orchestration and settings UI
     SbsOverlayService.kt        - Foreground service: owns overlay window and capture session
     SbsAccessibilityService.kt  - Accessibility service: gesture injection and trusted overlay window

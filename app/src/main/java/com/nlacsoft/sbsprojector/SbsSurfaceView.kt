@@ -1,4 +1,4 @@
-package com.sbsprojector
+package com.nlacsoft.sbsprojector
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -33,7 +33,7 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
 
     private val surfaceHolder: SurfaceHolder = holder
     private val paint = Paint(Paint.FILTER_BITMAP_FLAG)
-    private val dividerPaint = Paint().apply { color = Color.BLACK }
+    private val dividerPaint = Paint().apply { color = 0xCC404040.toInt() }
     private val backButton = OverlayButton("BACK", 0xCC606060.toInt(), RectF())
     private val stopButton = OverlayButton("STOP SBS", 0xCC004090.toInt(), RectF())
 
@@ -177,9 +177,9 @@ class SbsSurfaceView(context: Context) : SurfaceView(context), SurfaceHolder.Cal
         }
 
         // Button hit-tests — consume the entire touch sequence so it is never forwarded.
+        if (stopButton.hitTest(event) { onStopRequested?.invoke() }) return true
         if (backButton.hitTest(event) { SbsAccessibilityService.instance?.performBack() })
                 return true
-        if (stopButton.hitTest(event) { onStopRequested?.invoke() }) return true
 
         val geom = lastGeometry ?: return false
         val pt = transformToFullScreen(event.x, event.y, geom)

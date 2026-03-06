@@ -1,4 +1,4 @@
-package com.sbsprojector
+package com.nlacsoft.sbsprojector
 
 import android.Manifest
 import android.accessibilityservice.AccessibilityServiceInfo
@@ -19,7 +19,7 @@ import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
-import com.sbsprojector.databinding.ActivityMainBinding
+import com.nlacsoft.sbsprojector.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
